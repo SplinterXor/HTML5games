@@ -168,7 +168,7 @@ SNAKE = {
         SNAKE.ctx.fillRect(SNAKE.snakeList[i][0], SNAKE.snakeList[i][1], 19, 19)
       }
       SNAKE.collisionDetection()
-    }, 1000 / 9)
+    }, 1000 / 6)
   }
 }
 // Starts when the page is fully loaded.
