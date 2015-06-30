@@ -1,0 +1,25 @@
+#canvas{
+  position:absolute;
+  display: block;
+  margin: 0 auto;
+}
+#canvasBg{
+  position: absolute;
+  display:block;
+  margin: 0 auto;
+  background-image:url("images/bg700x700.png")
+}
+#canvasFg{
+  position: absolute;
+  display:block;
+  margin: 0 auto;
+  background-image:url("images/fg700x700.png")
+}
+#wrap{
+  margin: auto;
+  height:700px;
+  width:700px;
+}
+body{
+  background-color: #105f31;
+}
