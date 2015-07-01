@@ -50,7 +50,34 @@ SNAKE = {
   gameOverScreen: function () {
     window.cancelAnimationFrame(SNAKE.gameLoop)
     clearTimeout(SNAKE.timeOut)
-    console.log('Game Over!')
+    SNAKE.ctx.fillStyle = '#222222'
+    SNAKE.ctx.fillRect(140, 230, 400, 150)
+    SNAKE.ctx.font = '60px Georgia'
+    SNAKE.ctx.fillStyle = 'white'
+    SNAKE.ctx.fillText('GAME OVER', 160, 300)
+    SNAKE.ctx.font = '20px Georgia'
+    SNAKE.ctx.fillText('Game Score: ' + SNAKE.gameScore, 200, 350)
+    SNAKE.ctx.font = '13px Georgia'
+    SNAKE.ctx.fillText('Play again? (y/n)', 400, 350)
+    window.removeEventListener('keydown', SNAKE.controls, false)
+    window.addEventListener('keydown', SNAKE.gameOverControls, false)
+
+  },
+
+  gameOverControls: function (event) {
+    switch (event.keyCode) {
+      case 89:
+        SNAKE.gameScore = 0
+        SNAKE.snakeList = [[80, 40]]
+        SNAKE.snakeY = 40
+        SNAKE.snakeX = 80
+        SNAKE.snakeXchange = 0
+        SNAKE.snakeYchange = 0
+        SNAKE.init()
+        window.removeEventListener('keydown', SNAKE.gameOverControls, false)
+        break
+    }
+
   },
 
 // variable to store the apple image.
@@ -80,6 +107,8 @@ SNAKE = {
 // Variable that is used to stop setTimeout.
   timeOut: undefined,
 
+  pauseMode: false,
+
 // The first function that is called. implements controls, Gridsystem and initiates the animation loop..
   init: function () {
     window.addEventListener('keydown', SNAKE.controls, false)
@@ -91,9 +120,11 @@ SNAKE = {
     SNAKE.draw()
   },
 
+  keyLock: false,
+
 // Function that will check for if the user have pressed any of the arrow keys.
   controls: function (event) {
-    if (event.keyCode <= 40 && event.keyCode >= 37) {
+    if (event.keyCode <= 40 && event.keyCode >= 37 && SNAKE.keyLock === false || event.keyCode === 80 && SNAKE.keyLock === false || SNAKE.pauseMode) {
       switch (event.keyCode) {
         // Left arrow
         case 37:
@@ -101,7 +132,7 @@ SNAKE = {
             SNAKE.snakeXchange = -20
             SNAKE.snakeYchange = 0
           }
-          break
+        break
         // up arrow
         case 38:
           if (SNAKE.snakeYchange <= 0) {
@@ -123,7 +154,21 @@ SNAKE = {
             SNAKE.snakeXchange = 0
           }
           break
+        case 80:
+          if (SNAKE.pauseMode === false) {
+            window.cancelAnimationFrame(SNAKE.gameLoop)
+            clearTimeout(SNAKE.timeOut)
+            SNAKE.pauseMode = true
+            SNAKE.ctx.font = '60px Georgia'
+            SNAKE.ctx.fillStyle = 'white'
+            SNAKE.ctx.fillText('PAUSE', 240, 300)
+          }else {
+            SNAKE.pauseMode = false
+            SNAKE.draw()
+          }
+          break
       }
+      SNAKE.keyLock = true
     }
   },
 
@@ -141,8 +186,8 @@ SNAKE = {
       SNAKE.gameScore += 10
       console.log(SNAKE.gameScore)
 
-      SNAKE.snakeList.push([SNAKE.snakeList[SNAKE.snakeList.length - 1][0]])
-      SNAKE.snakeList.push([SNAKE.snakeList[SNAKE.snakeList.length - 1][1]])
+      SNAKE.snakeList.push([SNAKE.snakeList[SNAKE.snakeList.length - 1][0], SNAKE.snakeList[SNAKE.snakeList.length - 1][1]])
+      // SNAKE.snakeList.push([SNAKE.snakeList[SNAKE.snakeList.length - 1][1]])
       SNAKE.rand()
     }
     if (SNAKE.snakeList[0][0] < 0 || SNAKE.snakeList[0][0] > 700 ||
@@ -164,10 +209,18 @@ SNAKE = {
 
       SNAKE.ctx.drawImage(SNAKE.appleImage, SNAKE.appleX, SNAKE.appleY)
       for (var i = 0; i < SNAKE.snakeList.length; i += 1) {
-        SNAKE.ctx.fillStyle = 'rgba(0, 128, 0, 1)'
-        SNAKE.ctx.fillRect(SNAKE.snakeList[i][0], SNAKE.snakeList[i][1], 19, 19)
+        SNAKE.ctx.fillStyle = 'rgba(0, 204, 0, 1)'
+        SNAKE.ctx.strokeStyle = 'black'
+
+        SNAKE.ctx.beginPath()
+        SNAKE.ctx.arc(SNAKE.snakeList[i][0] + 10, SNAKE.snakeList[i][1] + 10, 10, 0, 2 * Math.PI, false)
+        SNAKE.ctx.closePath()
+        SNAKE.ctx.fill()
+        SNAKE.ctx.stroke()
+        // SNAKE.ctx.fillRect(SNAKE.snakeList[i][0], SNAKE.snakeList[i][1], 19, 19)
       }
       SNAKE.collisionDetection()
+      SNAKE.keyLock = false
     }, 1000 / 6)
   }
 }
